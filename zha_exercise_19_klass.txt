@@ -1,0 +1,85 @@
+*&---------------------------------------------------------------------*
+*& Include zha_exercise_19_klass
+*&---------------------------------------------------------------------*
+
+class zanagram definition.
+  public section.
+
+    types: begin of harf,
+             letter type char1,
+             adet   type i,
+           end of harf.
+    types: harfler type standard table of harf with empty key.
+
+    methods: anagram
+      importing
+        input         type string
+        candidates    type string_table
+      returning
+        value(result) type string_table.
+
+  private section.
+
+    methods: tabloyayaz
+      importing
+        input         type string
+      returning
+        value(result) type harfler.
+
+    methods karsilastir
+      importing
+                input         type harfler
+                aday          type harfler
+      returning value(result) type abap_bool.
+endclass.
+
+class zanagram implementation.
+
+  method tabloyayaz.
+    data: h type char1.
+    field-symbols: <fs_harf> type harf.
+
+    data(len) = strlen( input ).
+
+    do len times.
+      data(yer) = sy-index - 1.
+      h = substring( val = input off = yer len = 1 ).
+      if h ca ' .,'.
+        continue.
+      endif.
+      read table result assigning <fs_harf> with key letter = h.
+      if sy-subrc = 0.
+        add 1 to <fs_harf>-adet.
+      else.
+        append value harf( letter = h adet = 1 ) to result.
+      endif.
+
+    enddo.
+  endmethod.
+
+  method anagram.
+    do lines( candidates ) times.
+      if to_lower( input )  = to_lower( candidates[ sy-index ] ).
+        continue.
+      endif.
+      data(inputtablo) = tabloyayaz( to_lower( input ) ).
+      data(adaytablo) = tabloyayaz( to_lower( candidates[ sy-index ] ) ).
+      if karsilastir( input = inputtablo aday = adaytablo )..
+        append candidates[ sy-index ] to result.
+      endif.
+    enddo.
+
+  endmethod.
+
+  method karsilastir.
+    loop at aday into data(harf).
+      read table input into data(garf) with key letter = harf-letter.
+      if sy-subrc = 0 and harf-adet = garf-adet.
+        result = abap_true..
+      else.
+        result = abap_false.
+        exit.
+      endif.
+    endloop.
+  endmethod.
+endclass.
