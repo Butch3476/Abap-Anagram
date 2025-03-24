@@ -1,0 +1,17 @@
+*&---------------------------------------------------------------------*
+*& Report zha_exercise_19
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+report zha_exercise_19.
+
+include zha_exercise_19_klass.
+
+data: anag type ref to zanagram.
+data: adaylar type string_table.
+
+start-of-selection.
+
+  adaylar = VALUE string_table( ( |Listen| ) ( |Silent| ) ( |LISTEN| ) ).
+  anag = new zanagram(  ).
+cl_demo_output=>display( anag->anagram( candidates = adaylar input = 'LISTEN' ) ).
